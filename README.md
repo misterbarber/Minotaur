@@ -24,6 +24,7 @@ Mining-juniors tracker (ASX / TSX / TSXV gold, silver, copper and rare earths), 
 
 ## Version history
 
+- v2.2 (20 Nov 2026): Method tab states the twice-weekly refresh (Wednesday and Saturday halves). Part of the clean invisory.uk rebuild (Invisory-Public-HTML-Rebuild-v1.0).
 - v2.1 (20 Nov 2026): identical app and data to v2.0; restores the browser icon, home-screen icon and link-preview tags that v2.0 dropped from the page header. Source reconstructed from the live page (rebuild verified identical to v2.0's body).
 - v2.0 (20 Nov 2026): 100 stocks from the re-run top-100 screen; data refresh split into two runs a week.
 - v1.9 (12 Oct 2026): 19 stocks, map front page, sticky filters, favicon files.
