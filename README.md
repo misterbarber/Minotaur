@@ -1,7 +1,26 @@
-# Minotaur data
+# Minotaur
 
-Data feed for the Minotaur mining-stocks app at https://invisory.uk/minotaur/.
+Mining-juniors tracker (ASX / TSX / TSXV gold, silver, copper and rare earths), hosted at https://invisory.uk/minotaur/ and as a private Claude artifact.
 
-`minotaur-data.json` is the latest published snapshot: ASX/TSX/TSXV gold, silver, copper and rare-earth stocks with price, market cap, stage, study NPV, funding, drill strikes, news, broker targets and milestones. It is updated automatically by a scheduled Claude research run. It contains no personal holdings.
+## What lives here
 
-Not investment advice.
+| Path | What it is |
+|---|---|
+| `minotaur-data.json` | Live data feed. The scheduled Claude refresh rewrites it; the web page fetches it every time it opens. Do not move or rename it. |
+| `site/` | The files that go in `public_html/minotaur/` on GoDaddy, exactly as uploaded: `index.html`, `favicon.ico`, `favicon-16.png`, `favicon-32.png`, `favicon-192.png`, `apple-touch-icon.png`, `og-image.png`. `Minotaur-Claude-v*.html` is the matching Claude-artifact build. |
+| `source/src/app.html` | Single source for both builds. |
+| `source/build.py` | `python3 build.py <version>` writes `build/Minotaur-Web-v<V>.html` and `build/Minotaur-Claude-v<V>.html`. |
+| `source/data.json` | Data snapshot embedded in the web build (the page loads newer data from the feed when available). |
+| `source/vendor/` | Leaflet CSS, topojson-client and the world-borders TopoJSON, inlined at build time. |
+| `source/tools/` | Icon and link-preview generators and the browser check script (Playwright). |
+| `source/screen/` | Top-100 screening scripts and research notes. |
+
+## Deploying the web version
+
+1. Upload everything in `site/` to `public_html/minotaur/` (keep the file names).
+2. Clear the Sucuri cache.
+
+## Version history
+
+- v2.1 (20 Nov 2026): 100 stocks. Source reconstructed from the live page after the chat holding the v2.0 files was lost; restores the browser icon, home-screen icon and link-preview tags missing from the live upload.
+- v1.9 (12 Oct 2026): 19 stocks, map front page, sticky filters, favicon files.
