@@ -1,0 +1,28 @@
+MINOTAUR SCHEDULED REFRESH (v2.0 - 100 stocks, two runs per week)
+
+Schedule: two runs per week. Run A (Wednesday) refreshes stocks whose id starts 0-9 or A-L; Run B (Saturday) refreshes ids M-Z. Both runs update FX and meta, and both publish to GitHub. If a run message says it was requested from the page, refresh all stocks.
+
+You are refreshing the data behind "Minotaur", Mark Barber's mining-stocks tracker, a Claude artifact at https://claude.ai/artifact/FyGiD7DpSVZYCTN58eQLaF. Its data lives in that artifact's database (ArtifactData tool; load with ToolSearch "select:ArtifactData"). Every figure must come from a source fetched in this run, cross-checked against a second source where possible. Never invent or estimate a figure; if you cannot verify something, leave the stored value unchanged and say so in lastRefreshNotes.
+
+DATA MODEL: unchanged from v1 (collection "stocks", doc_id = ticker id; "meta"/"info"; private "data/users/me"/"state"). Keep triggerId unchanged.
+
+SOURCES THAT WORK (Nov 2026)
+- Closes: eoddata.com/stockquote/<ASX|TSX|TSXV>/<T>.htm?r=<MMDD> (end-of-day, 4 decimals). Cross-check with stockanalysis.com/quote/<asx|tsx|tsxv>/<T>/history/?r=<MMDD>. Add the ?r= query each run: both sites serve stale cached pages without it. StockAnalysis ASX rows for "today" can be intraday; prefer EODData for ASX closes. Fetch StockAnalysis one page at a time (it rate-limits parallel fetches).
+- Shares, 52-week range, profile: stockanalysis.com/quote/<exchange>/<T>/?r=<MMDD>.
+- ASX announcements: asx.api.markitdigital.com/asx-research/1.0/companies/<t>/announcements (lower-case ticker). The document PDF is at https://www.aspecthuntley.com.au/asxdata/<YYYYMMDD AEDT>/pdf/<8-digit middle part of documentKey>.pdf; if the date folder fails, try the next day. Do not use the markit "header" price (often stale).
+- Canadian news: company website news pages (add ?r=<MMDD>), SEDAR+ summaries, Kitco/Reuters.
+- FX: x-rates.com/historical/?from=GBP&amount=1&date=<YYYY-MM-DD>, cross-checked with the ECB daily reference rates XML.
+
+STEPS (for the stocks in this run's half)
+1. List "stocks" with out_dir; get "meta"/"info" and "data/users/me"/"state".
+2. FX: as above; compute toGBP and toUSD.
+3. Per stock: latest close, priceDate, shares, w52. News from the last 14 days: placements, studies (post-tax NPV, rate, IRR, capex, price deck), resource updates, drill results, permits, takeovers, delistings. Update stage, stageNote, npv, resource, funding, catalysts, strikes (newest first, max 8), news (newest first, max 10, working URLs), sources. If a company is acquired, delisted or suspended, say so in stageNote and add a news item; do not delete the document.
+4. Price history: append the latest weekly close; drop points older than 12 months; the last point must match price/priceDate when in the same week. Backfill (fewer than 40 points) for at most 8 stocks per run, oldest-added first, from StockAnalysis /history/ pages.
+5. Enrichment of new names: stocks whose resource field starts "Not yet captured" get resource, funding, catalysts, milestones, targets and a better map pin (project site, not region centroid) - at most 8 per run. Locate pins from Wikipedia or OpenStreetMap (Nominatim) and state the source in locNote.
+6. Targets and milestones as in v1 (named, dated broker targets within 12 months; flag brokers who ran a raise; milestones 3-8 items, mark "slipped" when guidance moves later).
+7. Write with ArtifactData "batch" (update ops, if_version = version read, max 50 per batch).
+8. Update "meta"/"info": asOf, fx, lastRefresh, lastRefreshNotes (2-5 lines: big moves, new studies, raises, takeovers, slipped milestones, new targets, and anything not verified; name the half refreshed).
+9. Publish to GitHub: clone https://github.com/misterbarber/Minotaur, write minotaur-data.json (compact JSON {"kind":"minotaur-snapshot","asOf","lastRefresh","fx","stocks":[all 100 stock documents sorted by id]}), excluding data/users/, triggerId and lastRefreshNotes. Validate it parses and holds every stock. Commit "Refresh Minotaur data <asOf>" and push to main. Confirm via https://raw.githubusercontent.com/misterbarber/Minotaur/main/minotaur-data.json.
+10. Finish with a short per-stock summary of material changes and whether the GitHub publish succeeded.
+
+Rules: ISO dates. Prices in listing currency. NPVs 100% project basis in the study's currency. Do not change lat/lon unless a source gives better coordinates. Never write anything into the database or the GitHub file that a fetched source does not support.

@@ -14,6 +14,8 @@ Mining-juniors tracker (ASX / TSX / TSXV gold, silver, copper and rare earths), 
 | `source/vendor/` | Leaflet CSS, topojson-client and the world-borders TopoJSON, inlined at build time. |
 | `source/tools/` | Icon and link-preview generators and the browser check script (Playwright). |
 | `source/screen/` | Top-100 screening scripts and research notes. |
+| `source/scheduled-task/` | The prompt the scheduled refresh runs (v2.0: Wednesdays ids 0-9/A-L, Saturdays M-Z, 06:53 London). |
+| `archive/` | Earlier uploaded web builds kept as delivered (v1.4, v2.0). |
 
 ## Deploying the web version
 
@@ -22,5 +24,6 @@ Mining-juniors tracker (ASX / TSX / TSXV gold, silver, copper and rare earths), 
 
 ## Version history
 
-- v2.1 (20 Nov 2026): 100 stocks. Source reconstructed from the live page after the chat holding the v2.0 files was lost; restores the browser icon, home-screen icon and link-preview tags missing from the live upload.
+- v2.1 (20 Nov 2026): identical app and data to v2.0; restores the browser icon, home-screen icon and link-preview tags that v2.0 dropped from the page header. Source reconstructed from the live page (rebuild verified identical to v2.0's body).
+- v2.0 (20 Nov 2026): 100 stocks from the re-run top-100 screen; data refresh split into two runs a week.
 - v1.9 (12 Oct 2026): 19 stocks, map front page, sticky filters, favicon files.
